@@ -10,8 +10,11 @@ router.get('/', (req, res) => {
     SELECT animals.*, paddocks.name AS paddock_name 
     FROM animals 
     LEFT JOIN paddocks ON animals.paddock_id = paddocks.id 
-    LIMIT ? OFFSET ?
-  `).all(limit, page);
+    LIMIT :limit OFFSET :limit * :page
+  `).all({
+    limit: limit,
+    page: page,
+  });
 
   const result = animals.map(animal => {
     const latestEvent = db.prepare(`
