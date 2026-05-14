@@ -58,7 +58,7 @@
 
       tbody.innerHTML = animals.map(a => {
         const event = a.latest_health_event
-          ? `${a.latest_health_event.event_type} (${a.latest_health_event.date})`
+          ? `${a.latest_health_event.event_type} (${new Date(a.latest_health_event.date).toDateString()})`
           : '—';
         return `
           <tr>
