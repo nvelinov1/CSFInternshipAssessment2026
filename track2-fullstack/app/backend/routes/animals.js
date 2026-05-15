@@ -7,9 +7,22 @@ router.get('/', (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
 
   const animals = db.prepare(`
-    SELECT animals.*, paddocks.name AS paddock_name 
-    FROM animals 
-    LEFT JOIN paddocks ON animals.paddock_id = paddocks.id 
+    SELECT
+      animals.*,
+      paddocks.name AS paddock_name,
+      latest_health_event.id AS latest_health_event_id,
+      latest_health_event.event_type AS latest_health_event_type,
+      latest_health_event.notes AS latest_health_event_notes,
+      latest_health_event.date AS latest_health_event_date,
+      latest_health_event.vet_name AS latest_health_event_vet_name
+    FROM animals
+    LEFT JOIN paddocks ON animals.paddock_id = paddocks.id
+    LEFT JOIN health_events AS latest_health_event ON latest_health_event.id = (
+      SELECT id FROM health_events
+      WHERE animal_id = animals.id
+      ORDER BY date DESC
+      LIMIT 1
+    )
     LIMIT :limit OFFSET :limit * :page
   `).all({
     limit: limit,
@@ -17,13 +30,28 @@ router.get('/', (req, res) => {
   });
 
   const result = animals.map(animal => {
-    const latestEvent = db.prepare(`
-      SELECT * FROM health_events
-      WHERE animal_id = ?
-      ORDER BY date DESC
-      LIMIT 1
-    `).get(animal.id);
-    return { ...animal, latest_health_event: latestEvent ?? null };
+    const latestHealthEventId = animal.latest_health_event_id;
+    const latestHealthEvent = latestHealthEventId
+      ? {
+          id: latestHealthEventId,
+          animal_id: animal.id,
+          event_type: animal.latest_health_event_type,
+          notes: animal.latest_health_event_notes,
+          date: animal.latest_health_event_date,
+          vet_name: animal.latest_health_event_vet_name,
+        }
+      : null;
+
+    return {
+      id: animal.id,
+      name: animal.name,
+      tag_number: animal.tag_number,
+      breed: animal.breed,
+      date_of_birth: animal.date_of_birth,
+      paddock_id: animal.paddock_id,
+      paddock_name: animal.paddock_name,
+      latest_health_event: latestHealthEvent,
+    }
   });
 
   res.json(result);
