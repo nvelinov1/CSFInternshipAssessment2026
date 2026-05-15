@@ -52,9 +52,9 @@ A weight record should store:
 
 ## Acceptance Criteria
 
-- [ ] `POST /animals/{id}/weights` creates a weight record and returns 201
-- [ ] `POST /animals/{id}/weights` returns 422 if `weight_kg` is missing or non-positive
-- [ ] `POST /animals/{id}/weights` returns 404 if the animal does not exist
-- [ ] `GET /animals/{id}/weights` returns all records ordered by date descending
-- [ ] Frontend displays weight history and allows logging a new measurement
-- [ ] Tests cover the happy path and the validation/error cases above
+- [x] `POST /animals/{id}/weights` creates a weight record and returns 201
+- [x] `POST /animals/{id}/weights` returns 422 if `weight_kg` is missing or non-positive
+- [x] `POST /animals/{id}/weights` returns 404 if the animal does not exist
+- [x] `GET /animals/{id}/weights` returns all records ordered by date descending
+- [x] Frontend displays weight history and allows logging a new measurement
+- [x] Tests cover the happy path and the validation/error cases above
