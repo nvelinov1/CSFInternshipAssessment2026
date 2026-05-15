@@ -12,8 +12,7 @@ function initDb() {
     CREATE TABLE IF NOT EXISTS paddocks (
       id           INTEGER PRIMARY KEY AUTOINCREMENT,
       name         TEXT    NOT NULL UNIQUE,
-      capacity     INTEGER NOT NULL,
-      animal_count INTEGER NOT NULL DEFAULT 0
+      capacity     INTEGER NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS animals (

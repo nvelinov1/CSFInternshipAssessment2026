@@ -33,11 +33,11 @@ function seedTestData() {
   db.exec('DELETE FROM weights; DELETE FROM health_events; DELETE FROM animals; DELETE FROM paddocks;');
 
   const northId = db.prepare(
-    'INSERT INTO paddocks (name, capacity, animal_count) VALUES (?, ?, 0)'
+    'INSERT INTO paddocks (name, capacity) VALUES (?, ?)'
   ).run('North Paddock', 50).lastInsertRowid;
 
   const southId = db.prepare(
-    'INSERT INTO paddocks (name, capacity, animal_count) VALUES (?, ?, 0)'
+    'INSERT INTO paddocks (name, capacity) VALUES (?, ?)'
   ).run('South Paddock', 30).lastInsertRowid;
 
   const insertAnimal = db.prepare(
@@ -46,9 +46,6 @@ function seedTestData() {
 
   const bellaId = insertAnimal.run('Bella', 'TAG-001', 'Merino', '2021-03-14', northId).lastInsertRowid;
   insertAnimal.run('Daisy', 'TAG-002', 'Dorper', '2020-07-22', southId);
-
-  db.prepare('UPDATE paddocks SET animal_count = animal_count + 1 WHERE id = ?').run(northId);
-  db.prepare('UPDATE paddocks SET animal_count = animal_count + 1 WHERE id = ?').run(southId);
 
   db.prepare(
     'INSERT INTO health_events (animal_id, event_type, notes, date, vet_name) VALUES (?, ?, ?, ?, ?)'

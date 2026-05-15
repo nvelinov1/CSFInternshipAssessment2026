@@ -3,7 +3,12 @@ const router = express.Router();
 const { db } = require('../db');
 
 router.get('/', (req, res) => {
-  const paddocks = db.prepare('SELECT * FROM paddocks').all();
+  const paddocks = db.prepare(`
+    SELECT p.*, COUNT(a.id) AS animal_count
+    FROM paddocks AS p
+    LEFT JOIN animals AS a ON a.paddock_id = p.id
+    GROUP BY p.id
+  `).all();
   res.json(paddocks);
 });
 
@@ -20,7 +25,13 @@ router.post('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-  const paddock = db.prepare('SELECT * FROM paddocks WHERE id = ?').get(req.params.id);
+  const paddock = db.prepare(`
+    SELECT p.*, COUNT(a.id) AS animal_count
+    FROM paddocks AS p
+    LEFT JOIN animals AS a ON a.paddock_id = p.id
+    WHERE p.id = ?
+    GROUP BY p.id
+  `).get(req.params.id);
   if (!paddock) return res.status(404).json({ error: 'Paddock not found' });
   res.json(paddock);
 });
